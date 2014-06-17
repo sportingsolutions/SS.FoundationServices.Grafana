@@ -1,5 +1,9 @@
 <div class="editor-row">
 	<div class="editor-option">
+      <label class="small">Null Point Mode <tip>Define how null values should be handled</tip></label>
+      <select class="input-medium" ng-model="panel.nullPointMode" ng-options="f for f in ['Connected', 'As Zero']"></select>
+    </div>
+	<div class="editor-option">
 	  <label class="small">Accuracy (Decimal Points)</label>
 	  <input type="number" class="input-small" ng-model="panel.decimalPoints" ng-model-onblur />
 	</div>

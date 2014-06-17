@@ -22,6 +22,7 @@ function (angular, app, _) {
       ================ */
 
     var _d = {
+      nullPointMode : 'Connected',
       decimalPoints : 0,
       showDelta : false,
       deltaColor : "#FFA500",
@@ -107,26 +108,29 @@ function (angular, app, _) {
 
     $scope.dataHandler = function(results) {
 
-      var data = results.data[0];
+      if(results.data){
 
-      if(data !== undefined){
-
+        var data = results.data[0];
         var datapoints = data.datapoints;
-        var rawVal = datapoints[datapoints.length - 1][0];
-        var newVal = rawVal === null ? 0 : rawVal;
 
-        if($scope.panel.oldVal !== newVal){
+        if(datapoints) {
 
-          var delta = newVal - $scope.panel.oldVal;
+          var rawVal = datapoints[datapoints.length - 1][0];
+          var newVal = rawVal !== null ? rawVal : $scope.panel.nullPointMode === 'Connected' ? $scope.panel.oldVal : 0;
+          alert($scope.panel.nullPointMode);
+          if($scope.panel.oldVal !== newVal){
 
-          var newValStr = newVal.toFixed($scope.panel.decimalPoints);
-          var deltaRoundedStr = delta.toFixed($scope.panel.decimalPoints);
-          var zeroRoundedStr = (0).toFixed($scope.panel.decimalPoints);
-          var deltaStr = delta > 0 ? '+' + deltaRoundedStr : delta === 0 ? '+/- ' + zeroRoundedStr : deltaRoundedStr;
+            var delta = newVal - $scope.panel.oldVal;
 
-          $scope.panel.val = newValStr;
-          $scope.panel.delta = deltaStr;
-          $scope.panel.oldVal = newVal;
+            var newValStr = newVal.toFixed($scope.panel.decimalPoints);
+            var deltaRoundedStr = delta.toFixed($scope.panel.decimalPoints);
+            var zeroRoundedStr = (0).toFixed($scope.panel.decimalPoints);
+            var deltaStr = delta > 0 ? '+' + deltaRoundedStr : delta === 0 ? '+/- ' + zeroRoundedStr : deltaRoundedStr;
+
+            $scope.panel.val = newValStr;
+            $scope.panel.delta = deltaStr;
+            $scope.panel.oldVal = newVal;
+          }
         }
       }
 
