@@ -117,7 +117,7 @@ function (angular, app, _) {
 
           var rawVal = datapoints[datapoints.length - 1][0];
           var newVal = rawVal !== null ? rawVal : $scope.panel.nullPointMode === 'Connected' ? $scope.panel.oldVal : 0;
-          alert($scope.panel.nullPointMode);
+          
           if($scope.panel.oldVal !== newVal){
 
             var delta = newVal - $scope.panel.oldVal;
