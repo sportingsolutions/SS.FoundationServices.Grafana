@@ -320,7 +320,7 @@ function (angular, app, $, _, kbn, moment, timeSeries) {
       // The issue appears to be with using from and until range values rather than explicit
       // unix dates. Being one datapoint out should make no difference in our case.
       // Note; this is what makes the graphs jump on the right hand side
-      
+
       var datapoints = _.initial(seriesData.datapoints);
       var alias = seriesData.target;
       var color = $scope.panel.aliasColors[alias] || $scope.colors[index];
