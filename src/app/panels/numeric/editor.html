@@ -1,0 +1,18 @@
+<div class="editor-row">
+	<div class="editor-option">
+	  <label class="small">Accuracy (Decimal Points)</label>
+	  <input type="number" class="input-small" ng-model="panel.decimalPoints" ng-model-onblur />
+	</div>
+	<div class="editor-option">
+	  <label class="small">Show Delta?</label>
+	  <input type="checkbox" ng-model="panel.showDelta" ng-checked="panel.showDelta">
+	</div>
+	<div class="editor-option" ng-show="panel.showDelta">
+	  <label class="small">Delta Color</label>
+	   <spectrum-picker ng-model="panel.deltaColor"></spectrum-picker>
+	</div>
+</div>
+<div>
+  <label class=small>Graphite Target Expression</label>
+  <input type="text" class="span10" ng-model='panel.expression' placeholder=""></input>
+</div>
