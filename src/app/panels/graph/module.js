@@ -302,7 +302,13 @@ function (angular, app, $, _, kbn, moment, timeSeries) {
     };
 
     $scope.seriesHandler = function(seriesData, index) {
-      var datapoints = seriesData.datapoints;
+
+      // Ignore the last datapoint as it returns inconsistent values across api calls.
+      // The issue appears to be with using from and until range values rather than explicit
+      // unix dates. Being one datapoint out should make no difference in our case.
+      // Note; this is what makes the graphs jump on the right hand side
+      
+      var datapoints = _.initial(seriesData.datapoints);
       var alias = seriesData.target;
       var color = $scope.panel.aliasColors[alias] || $scope.colors[index];
       var yaxis = $scope.panel.aliasYAxis[alias] || 1;

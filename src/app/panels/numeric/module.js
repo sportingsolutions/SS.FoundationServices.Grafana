@@ -115,9 +115,13 @@ function (angular, app, _) {
 
         if(datapoints) {
 
-          var rawVal = datapoints[datapoints.length - 1][0];
+          // Ignore the last datapoint as it returns inconsistent values across api calls.
+          // The issue appears to be with using from and until range values rather than explicit
+          // unix dates. Being one datapoint out should make no difference in our case.
+
+          var rawVal = datapoints[datapoints.length - 2][0];
           var newVal = rawVal !== null ? rawVal : $scope.panel.nullPointMode === 'Connected' ? $scope.panel.oldVal : 0;
-          
+
           if($scope.panel.oldVal !== newVal){
 
             var delta = newVal - $scope.panel.oldVal;
