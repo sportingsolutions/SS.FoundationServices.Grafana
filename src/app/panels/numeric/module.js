@@ -124,7 +124,7 @@ function (angular, app, _) {
 
           if($scope.panel.oldVal !== newVal){
 
-            var delta = newVal - $scope.panel.oldVal;
+            var delta = $scope.panel.oldVal ? newVal - $scope.panel.oldVal : 0;
 
             var newValStr = newVal.toFixed($scope.panel.decimalPoints);
             var deltaRoundedStr = delta.toFixed($scope.panel.decimalPoints);
