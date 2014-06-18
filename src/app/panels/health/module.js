@@ -15,7 +15,7 @@ function (angular, app, _) {
   };
 
   var WARNING = {
-    icon : "icon-warning-sign",
+    icon : "icon-exclamation-sign",
     iconColor : "#FFA500"
   };
 
@@ -39,6 +39,7 @@ function (angular, app, _) {
     var _d = {
       nullPointMode : 'Connected',
       warningThreshold : 0.5,
+      includeWarningThreshold : false,
       errorThreshold : 1,
       expression : "",
     };
@@ -158,8 +159,10 @@ function (angular, app, _) {
 
             var type = OK;
 
-            if(newVal >= $scope.panel.warningThreshold){
-              type = newVal >= $scope.panel.errorThreshold ? ERROR : WARNING;
+            if(newVal >= $scope.panel.errorThreshold){
+              type = ERROR;
+            } else if($scope.panel.includeWarningThreshold && newVal >= $scope.panel.warningThreshold){
+              type = WARNING;
             }
 
             $scope.updateStyle(type);

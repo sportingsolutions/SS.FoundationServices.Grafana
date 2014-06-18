@@ -4,12 +4,16 @@
       <select class="input-medium" ng-model="panel.nullPointMode" ng-options="f for f in ['Connected', 'As Zero']"></select>
     </div>
 	<div class="editor-option">
-	  <label class="small">Warning Threshold</label>
-	  <input type="number" step="any" min="0" class="input-small" ng-model="panel.warningThreshold" ng-model-onblur />
-	</div>
-	<div class="editor-option">
 	  <label class="small">Error Threshold</label>
 	  <input type="number" step="any" min="0" class="input-small" ng-model="panel.errorThreshold" ng-model-onblur />
+	</div>
+	<div class="editor-option">
+	  <label class="small">Warning Threshold?</label>
+	  <input type="checkbox" ng-model="panel.includeWarningThreshold" ng-checked="panel.includeWarningThreshold">
+	</div>
+	<div class="editor-option" ng-show="panel.includeWarningThreshold">
+	  <label class="small">Warning Threshold</label>
+	  <input type="number" step="any" min="0" class="input-small" ng-model="panel.warningThreshold" ng-model-onblur />
 	</div>
 </div>
 <div>
