@@ -34,7 +34,6 @@ function (angular, _, $) {
       {
         text: 'Span',
         submenu: [
-          { text: '1', click: 'updateColumnSpan(1)' },
           { text: '2', click: 'updateColumnSpan(2)' },
           { text: '3', click: 'updateColumnSpan(3)' },
           { text: '4', click: 'updateColumnSpan(4)' },
