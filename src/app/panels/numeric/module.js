@@ -111,29 +111,33 @@ function (angular, app, _) {
       if(results.data){
 
         var data = results.data[0];
-        var datapoints = data.datapoints;
 
-        if(datapoints) {
+        if(data){
 
-          // Ignore the last datapoint as it returns inconsistent values across api calls.
-          // The issue appears to be with using from and until range values rather than explicit
-          // unix dates. Being one datapoint out should make no difference in our case.
+          var datapoints = data.datapoints;
 
-          var rawVal = datapoints[datapoints.length - 2][0];
-          var newVal = rawVal !== null ? rawVal : $scope.panel.nullPointMode === 'Connected' ? $scope.panel.oldVal : 0;
+          if(datapoints) {
 
-          if($scope.panel.oldVal !== newVal){
+            // Ignore the last datapoint as it returns inconsistent values across api calls.
+            // The issue appears to be with using from and until range values rather than explicit
+            // unix dates. Being one datapoint out should make no difference in our case.
 
-            var delta = $scope.panel.oldVal ? newVal - $scope.panel.oldVal : 0;
+            var rawVal = datapoints[datapoints.length - 2][0];
+            var newVal = rawVal !== null ? rawVal : $scope.panel.nullPointMode === 'Connected' ? $scope.panel.oldVal : 0;
 
-            var newValStr = newVal.toFixed($scope.panel.decimalPoints);
-            var deltaRoundedStr = delta.toFixed($scope.panel.decimalPoints);
-            var zeroRoundedStr = (0).toFixed($scope.panel.decimalPoints);
-            var deltaStr = delta > 0 ? '+' + deltaRoundedStr : delta === 0 ? '+/- ' + zeroRoundedStr : deltaRoundedStr;
+            if($scope.panel.oldVal !== newVal){
 
-            $scope.panel.val = newValStr;
-            $scope.panel.delta = deltaStr;
-            $scope.panel.oldVal = newVal;
+              var delta = $scope.panel.oldVal ? newVal - $scope.panel.oldVal : 0;
+
+              var newValStr = newVal.toFixed($scope.panel.decimalPoints);
+              var deltaRoundedStr = delta.toFixed($scope.panel.decimalPoints);
+              var zeroRoundedStr = (0).toFixed($scope.panel.decimalPoints);
+              var deltaStr = delta > 0 ? '+' + deltaRoundedStr : delta === 0 ? '+/- ' + zeroRoundedStr : deltaRoundedStr;
+
+              $scope.panel.val = newValStr;
+              $scope.panel.delta = deltaStr;
+              $scope.panel.oldVal = newVal;
+            }
           }
         }
       }
