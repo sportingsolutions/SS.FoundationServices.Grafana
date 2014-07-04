@@ -16,12 +16,6 @@ function (Settings) {
         url: "http://my.graphite.server.com:8080",
         default: true
       },
-      influxdb: {
-        type: 'influxdb',
-        url: "http://my_influxdb_server:8086/db/database_name",
-        username: 'admin',
-        password: 'admin'
-      },
     },
 
     // elasticsearch url
@@ -48,7 +42,7 @@ function (Settings) {
     timezoneOffset: null,
 
     // set to false to disable unsaved changes warning
-    unsaved_changes_warning: true,
+    unsaved_changes_warning: false,
 
     // set the default timespan for the playlist feature
     // Example: "1m", "1h"
@@ -56,7 +50,7 @@ function (Settings) {
 
     // Add your own custom pannels
     plugins: {
-      panels: []
+      panels: ["numeric", "health"]
     }
 
   });
