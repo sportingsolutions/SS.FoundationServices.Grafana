@@ -2,11 +2,12 @@ define([
   'angular',
   'app',
   'underscore',
+  'jquery',
   'require',
   'kbn'
 ],
 
-function (angular, app, _) {
+function (angular, app, _, $) {
   'use strict';
 
   var OK = {
@@ -120,10 +121,9 @@ function (angular, app, _) {
 
       var graphiteQuery = {
         range: this.filter.timeRange(false),
-        interval: $scope.interval,
         targets: [{ target: $scope.panel.expression }],
         format: 'json',
-        maxDataPoints: 1,
+        maxDataPoints: Math.ceil($(window).width() * ($scope.panel.span / 12)),
         datasource: 'graphite',
       };
 
@@ -150,11 +150,14 @@ function (angular, app, _) {
 
           if(datapoints) {
 
-            // Ignore the last datapoint as it returns inconsistent values across api calls.
-            // The issue appears to be with using from and until range values rather than explicit
-            // unix dates. Being one datapoint out should make no difference in our case.
+            var rawVal;
 
-            var rawVal = datapoints[datapoints.length - 2][0];
+            if(datapoints.length > 1){
+              rawVal = datapoints[datapoints.length - 2][0];
+            }else{
+              rawVal = datapoints[0][0];
+            }
+
             var newVal = rawVal !== null ? rawVal : $scope.panel.nullPointMode === 'Connected' ? $scope.panel.oldVal : 0;
 
             var type = OK;
