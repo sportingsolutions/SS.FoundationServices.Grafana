@@ -1,9 +1,11 @@
 <div ng-controller='numeric' ng-init="init()" style="height:{{panel.height || row.height}}" >
-  <div ng-style="{height: panel.calculatedHeight}" style="display:table;text-align:center;width:100%;padding:10px;">
+  <div ng-style="{height: panel.calculatedHeight}" style="display:table;text-align:center;width:100%;padding-top:10px;">
     <div style="display:table-cell;vertical-align:middle;">
-      <b ng-bind-html-unsafe="panel.val" style="font-size:100px;"></b>
-      <br/><br/>
-      <b ng-bind-html-unsafe="panel.delta" ng-show="panel.showDelta" ng-style="{color: panel.deltaColor}" style="font-size:30px;" ></b>
+      <b style="font-size:100px;">{{panel.val}}</b>
+      <div ng-show="panel.showDelta">
+        <br/>
+        <b ng-style="{color: panel.deltaColor}" style="font-size:30px;" >{{panel.delta}}</b>
+      </div>
     </div>
   </div>
 </div>

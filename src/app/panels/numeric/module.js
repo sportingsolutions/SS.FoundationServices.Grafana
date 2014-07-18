@@ -35,9 +35,9 @@ function (angular, app, _, $) {
     $scope.init = function() {
       $scope.initBaseController(this, $scope);
 
-      $scope.panel.val = 0;
-      $scope.panel.delta = 0;
-      $scope.panel.oldVal = 0;
+      $scope.panel.val = "0";
+      $scope.panel.delta = "+/- 0";
+      $scope.panel.oldVal = "0";
 
       $scope.calculateHeight();
       $scope.getData();
