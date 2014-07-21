@@ -39,9 +39,10 @@ function (angular, app, _, $) {
 
     var _d = {
       nullPointMode : 'Connected',
+      direction : "Asc",
       warningThreshold : 0.5,
       includeWarningThreshold : false,
-      errorThreshold : 1,
+      threshold : 1,
       expression : "",
     };
 
@@ -49,9 +50,7 @@ function (angular, app, _, $) {
 
     $scope.init = function() {
       $scope.initBaseController(this, $scope);
-
-      $scope.updateStyle(OK);
-
+      $scope.panel.updates = [];
       $scope.getData();
     };
 
@@ -67,47 +66,53 @@ function (angular, app, _, $) {
     });
 
     $scope.$on('render', function() {
-      $scope.updateStyle();
+      $scope.update();
     });
 
     angular.element(window).bind('resize', function() {
-      $scope.updateStyle();
+      $scope.update();
     });
 
     /* Functions
       =========== */
 
-    $scope.updateStyle = function(type) {
+    $scope.update = function(updates) {
 
-      if(!type){
-        type = $scope.panel.currentType;
+      if(!updates){
+        updates = $scope.panel.updates;
       }
 
-      $scope.calculateHeight();
-      $scope.panel.icon = type.icon;
-      $scope.panel.currentStyle = function() {
-        return {
-          color : type.iconColor,
-          fontSize : $scope.panel.calculatedIconHeight
-        };
-      };
+      $scope.calculateHeight(updates.length);
+      $scope.panel.updates = updates;
+      $('div').tooltip('hide');
 
-      $scope.panel.currentType = type;
+      if(!$scope.$$phase && !$scope.$root.$$phase){
+        
+        $scope.$apply(); 
+      }
     };
 
-    $scope.calculateHeight = function() {
+    $scope.panel.getUpdateStyle = function(update) {
+      return {
+        'color': update.type.iconColor,
+        'fontSize': $scope.panel.calculatedFontSize, 
+      };
+    }
+
+    $scope.calculateHeight = function(updateCount) {
       try {
 
         var height = $scope.height || $scope.panel.height || $scope.row.height;
+        var windowWidth = $(window).width();
+        var singleSpanWidth = Math.ceil(windowWidth * (1 / 12));
+        var fontSize = singleSpanWidth - 10;
 
         if (_.isString(height)) {
           height = parseInt(height.replace('px', ''), 10);
         }
 
-        // 32 taken from grafanaGraph directive - setElementHeight()
-        var calculatedHeight = height - 32;
-        $scope.panel.calculatedHeight = calculatedHeight + 'px';
-        $scope.panel.calculatedIconHeight = (calculatedHeight - 35) + 'px';
+        $scope.panel.calculatedHeight = (height - 32) + 'px';
+        $scope.panel.calculatedFontSize = fontSize + 'px';
 
       } catch(e) {
         // IE throws errors sometimes
@@ -142,35 +147,60 @@ function (angular, app, _, $) {
 
       if(results.data){
 
-        var data = results.data[0];
+        var updates = [];
 
-        if(data){
+        for (var i = 0; i < results.data.length; i++) {
 
-          var datapoints = data.datapoints;
+          var data = results.data[i];
 
-          if(datapoints) {
+          if(data){
 
-            var rawVal;
+            var datapoints = data.datapoints;
 
-            if(datapoints.length > 1){
-              rawVal = datapoints[datapoints.length - 2][0];
-            }else{
-              rawVal = datapoints[0][0];
+            if(datapoints) {
+
+              var rawVal;
+
+              if(datapoints.length > 1){
+                rawVal = datapoints[datapoints.length - 2][0];
+              }else{
+                rawVal = datapoints[0][0];
+              }
+
+              var newVal = rawVal !== null ? rawVal : $scope.panel.nullPointMode === 'Connected' ? $scope.panel.oldVal : 0;
+              var type;
+
+              if($scope.panel.direction === 'Asc')
+              {
+                  if(newVal >= $scope.panel.threshold){
+                    type = ERROR;
+                  } else if($scope.panel.includeWarningThreshold && newVal >= $scope.panel.warningThreshold){
+                    type = WARNING;
+                  } else {
+                    type = OK;
+                  }
+              } else {
+                  if(newVal >= $scope.panel.threshold){
+                    type = OK;
+                  } else if($scope.panel.includeWarningThreshold && newVal >= $scope.panel.warningThreshold){
+                    type = WARNING;
+                  } else {
+                    type = ERROR;
+                  }
+              }
+
+              var update = {
+                text : data.target,
+                type : type
+              };
+
+              updates.push(update);
             }
-
-            var newVal = rawVal !== null ? rawVal : $scope.panel.nullPointMode === 'Connected' ? $scope.panel.oldVal : 0;
-
-            var type = OK;
-
-            if(newVal >= $scope.panel.errorThreshold){
-              type = ERROR;
-            } else if($scope.panel.includeWarningThreshold && newVal >= $scope.panel.warningThreshold){
-              type = WARNING;
-            }
-
-            $scope.updateStyle(type);
           }
         }
+
+        $scope.update(updates);
+
       }
 
       $scope.panelMeta.loading = false;

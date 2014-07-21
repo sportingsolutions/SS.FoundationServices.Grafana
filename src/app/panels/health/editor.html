@@ -3,9 +3,13 @@
       <label class="small">Null Point Mode <tip>Define how null values should be handled</tip></label>
       <select class="input-medium" ng-model="panel.nullPointMode" ng-options="f for f in ['Connected', 'As Zero']"></select>
     </div>
+    <div class="editor-option">
+      <label class="small">Direction <tip>Asc - 0 is healthy, warning/error levels are greater than 0; Desc - 0 is error, warning/healthy levels are greater than 0</tip></label>
+      <select class="input-medium" ng-model="panel.direction" ng-options="f for f in ['Asc', 'Desc']"></select>
+    </div>
 	<div class="editor-option">
-	  <label class="small">Error Threshold</label>
-	  <input type="number" step="any" min="0" class="input-small" ng-model="panel.errorThreshold" ng-model-onblur />
+	  <label class="small">{{panel.direction == 'Asc' ? 'Error' : 'Healthy'}} Threshold</label>
+	  <input type="number" step="any" min="0" class="input-small" ng-model="panel.threshold" ng-model-onblur />
 	</div>
 	<div class="editor-option">
 	  <label class="small">Warning Threshold?</label>
