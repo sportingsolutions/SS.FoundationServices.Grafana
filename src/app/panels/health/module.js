@@ -31,7 +31,7 @@ function (angular, app, _, $) {
   module.controller('health', function($rootScope, $scope, datasourceSrv) {
 
     $scope.panelMeta = {
-      description : "Shows a metric as a health icon. 0 - error, 0.5 - warning, 1 - good"
+      description : "Shows a metric as a health icon."
     };
 
     /* Initialization
@@ -82,12 +82,11 @@ function (angular, app, _, $) {
         updates = $scope.panel.updates;
       }
 
-      $scope.calculateHeight(updates.length);
+      $scope.calculate(updates.length);
       $scope.panel.updates = updates;
       $('div').tooltip('hide');
 
       if(!$scope.$$phase && !$scope.$root.$$phase){
-        
         $scope.$apply(); 
       }
     };
@@ -99,7 +98,7 @@ function (angular, app, _, $) {
       };
     }
 
-    $scope.calculateHeight = function(updateCount) {
+    $scope.calculate = function(updateCount) {
       try {
 
         var height = $scope.height || $scope.panel.height || $scope.row.height;
