@@ -127,7 +127,7 @@ function (angular, app, _, $) {
             canFit++;
           }
 
-          if(canFit > updateCount){
+          if(canFit >= updateCount){
             break;
           } else{
             currentFontSize--;
