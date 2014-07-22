@@ -1,9 +1,7 @@
 <div ng-controller='health' ng-init="init()" style="height:{{panel.height || row.height}}" >
   <div ng-style="{height: panel.calculatedHeight}" style="display:table;text-align:center;width:100%;">
     <div style="display:table-cell;vertical-align:middle;">
-      <span>
-        <i ng-repeat="update in panel.updates" class="{{update.type.icon}}" ng-style="panel.getUpdateStyle(update)" style="padding:3px" bs-tooltip="'{{update.text}}'" data-placement="bottom"></i>
-      </span>
+        <i ng-repeat="update in panel.updates" class="{{update.type.icon}}" ng-style="panel.getUpdateStyle(update)" bs-tooltip="'{{update.text}}'" data-placement="bottom"></i>
     </div>
   </div>
 </div>

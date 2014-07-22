@@ -10,20 +10,9 @@ define([
 function (angular, app, _, $) {
   'use strict';
 
-  var OK = {
-    icon : "icon-ok-sign",
-    iconColor : "#ADFF2F"
-  };
-
-  var WARNING = {
-    icon : "icon-exclamation-sign",
-    iconColor : "#FFA500"
-  };
-
-  var ERROR = {
-    icon : "icon-remove-sign",
-    iconColor : "#FF0000"
-  };
+  var HEALTHY = "icon-ok-sign";
+  var WARNING = "icon-exclamation-sign";
+  var ERROR = "icon-remove-sign";
 
   var module = angular.module('kibana.panels.health', []);
   app.useModule(module);
@@ -44,6 +33,9 @@ function (angular, app, _, $) {
       includeWarningThreshold : false,
       threshold : 1,
       expression : "",
+      healthyColor : "#ADFF2F",
+      errorColor : "#FF0000",
+      warningColor : "#FFA500",
     };
 
     _.defaults($scope.panel, _d);
@@ -87,31 +79,63 @@ function (angular, app, _, $) {
       $('div').tooltip('hide');
 
       if(!$scope.$$phase && !$scope.$root.$$phase){
-        $scope.$apply(); 
+        $scope.$apply();
       }
     };
 
     $scope.panel.getUpdateStyle = function(update) {
       return {
         'color': update.type.iconColor,
-        'fontSize': $scope.panel.calculatedFontSize, 
+        'fontSize': $scope.panel.calculatedFontSize,
+        'padding': '2px',
       };
-    }
+    };
 
     $scope.calculate = function(updateCount) {
       try {
 
         var height = $scope.height || $scope.panel.height || $scope.row.height;
         var windowWidth = $(window).width();
-        var singleSpanWidth = Math.ceil(windowWidth * (1 / 12));
-        var fontSize = singleSpanWidth - 10;
 
         if (_.isString(height)) {
           height = parseInt(height.replace('px', ''), 10);
         }
 
-        $scope.panel.calculatedHeight = (height - 32) + 'px';
-        $scope.panel.calculatedFontSize = fontSize + 'px';
+        var totalWidth =  Math.ceil(windowWidth * ($scope.panel.span / 12)) - 20; // For padding within panel
+        var totalHeight = height - 32; // 32 for error bar
+        var currentFontSize = 130; // 130px is the max size
+        var availableOnRow = totalWidth;
+        var availableOnHeight = totalHeight;
+
+        while(true){
+
+          var fontHeight = currentFontSize + 2 + 4; // 1px top and bottom margin from font + 2px padding top and bottom
+          var fontWidth = fontHeight * 0.84 + 4; // 0.84 is ratio size of icons we're using + 2px padding left and right
+          var canFit = 0;
+
+          while(canFit <= updateCount) {
+            availableOnRow -= fontWidth;
+            if(availableOnRow < fontWidth){
+              availableOnRow = totalWidth;
+              availableOnHeight -= fontHeight;
+              if(availableOnHeight < fontHeight){
+                availableOnHeight = totalHeight;
+                break;
+              }
+            }
+
+            canFit++;
+          }
+
+          if(canFit > updateCount){
+            break;
+          } else{
+            currentFontSize--;
+          }
+        }
+
+        $scope.panel.calculatedHeight = totalHeight + 'px';
+        $scope.panel.calculatedFontSize = currentFontSize + 'px';
 
       } catch(e) {
         // IE throws errors sometimes
@@ -167,26 +191,7 @@ function (angular, app, _, $) {
               }
 
               var newVal = rawVal !== null ? rawVal : $scope.panel.nullPointMode === 'Connected' ? $scope.panel.oldVal : 0;
-              var type;
-
-              if($scope.panel.direction === 'Asc')
-              {
-                  if(newVal >= $scope.panel.threshold){
-                    type = ERROR;
-                  } else if($scope.panel.includeWarningThreshold && newVal >= $scope.panel.warningThreshold){
-                    type = WARNING;
-                  } else {
-                    type = OK;
-                  }
-              } else {
-                  if(newVal >= $scope.panel.threshold){
-                    type = OK;
-                  } else if($scope.panel.includeWarningThreshold && newVal >= $scope.panel.warningThreshold){
-                    type = WARNING;
-                  } else {
-                    type = ERROR;
-                  }
-              }
+              var type = $scope.getType(newVal);
 
               var update = {
                 text : data.target,
@@ -203,6 +208,43 @@ function (angular, app, _, $) {
       }
 
       $scope.panelMeta.loading = false;
+
+    };
+
+    $scope.getType = function(newVal) {
+
+      var iconColor;
+      var icon;
+
+      if($scope.panel.direction === 'Asc')
+      {
+        if(newVal >= $scope.panel.threshold){
+          icon = ERROR;
+          iconColor = $scope.panel.errorColor;
+        } else if($scope.panel.includeWarningThreshold && newVal >= $scope.panel.warningThreshold){
+          icon = WARNING;
+          iconColor = $scope.panel.warningColor;
+        } else {
+          icon = HEALTHY;
+          iconColor = $scope.panel.healthyColor;
+        }
+      } else {
+        if(newVal >= $scope.panel.threshold){
+          icon = HEALTHY;
+          iconColor = $scope.panel.healthyColor;
+        } else if($scope.panel.includeWarningThreshold && newVal >= $scope.panel.warningThreshold){
+          icon = WARNING;
+          iconColor = $scope.panel.warningColor;
+        } else {
+          icon = ERROR;
+          iconColor = $scope.panel.errorColor;
+        }
+      }
+
+      return {
+        icon: icon,
+        iconColor: iconColor
+      };
 
     };
 

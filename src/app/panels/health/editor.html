@@ -12,12 +12,24 @@
 	  <input type="number" step="any" min="0" class="input-small" ng-model="panel.threshold" ng-model-onblur />
 	</div>
 	<div class="editor-option">
+	  <label class="small">Healthy Color</label>
+	   <spectrum-picker ng-model="panel.healthyColor"></spectrum-picker>
+	</div>
+	<div class="editor-option">
+	  <label class="small">Error Color</label>
+	   <spectrum-picker ng-model="panel.errorColor"></spectrum-picker>
+	</div>
+	<div class="editor-option">
 	  <label class="small">Warning Threshold?</label>
 	  <input type="checkbox" ng-model="panel.includeWarningThreshold" ng-checked="panel.includeWarningThreshold">
 	</div>
 	<div class="editor-option" ng-show="panel.includeWarningThreshold">
 	  <label class="small">Warning Threshold</label>
 	  <input type="number" step="any" min="0" class="input-small" ng-model="panel.warningThreshold" ng-model-onblur />
+	</div>
+	<div class="editor-option" ng-show="panel.includeWarningThreshold">
+	  <label class="small">Warning Color</label>
+	   <spectrum-picker ng-model="panel.warningColor"></spectrum-picker>
 	</div>
 </div>
 <div>
