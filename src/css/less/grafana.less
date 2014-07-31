@@ -1,9 +1,10 @@
 @import "submenu.less";
+@import "graph.less";
 @import "bootstrap-tagsinput.less";
 
 .hide-controls {
   padding: 0;
-  .grafana-row {
+  .row-control-inner {
     display: none;
   }
   .submenu-controls {
@@ -123,12 +124,6 @@
   font-size: 12px;
 }
 
-.hidden-series {
-  a {
-    color: darken(@linkColor, 45%);
-  }
-}
-
 .panel-fullscreen {
   z-index: 100;
   display: block !important;
@@ -138,7 +133,7 @@
   top: 54px;
   height: 100%;
   padding: 0 10px;
-  background: @kibanaPanelBackground;
+  background: @grafanaPanelBackground;
   overflow-y: scroll;
   height: 100%;
 
@@ -154,55 +149,8 @@
   right: -10000px;
 }
 
-// Graphite Graph Legends
-
-.grafana-legend-container {
-  margin: 0 15px;
-  text-align: left;
-  position: relative;
-  top: 2px;
-}
-
-.grafana-legend-container .popover-content {
-  padding: 0;
-}
-
-.histogram-legend {
-  display:inline-block;
-  padding: 0 4px;
-  i {
-    position: relative;
-    top: 2px;
-  }
-}
-
-.histogram-legend-item {
-  display:inline-block;
-}
-
 .histogram-chart {
   position:relative;
-}
-
-.histogram-legend-popover {
-  width: 200px;
-  label {
-    display: inline-block;
-  }
-  .btn {
-    padding: 1px 3px;
-    margin-right: 0px;
-    line-height: initial;
-  }
-  .close {
-    margin-right: 5px;
-    color: @linkColor;
-    opacity: 0.7;
-    text-shadow: none;
-  }
-  .editor-row {
-    padding: 5px;
-  }
 }
 
 .panel-full-edit-tabs {
@@ -262,6 +210,13 @@
   margin-left: 30px;
   >li {
     float: left;
+  }
+}
+
+.grafana-metric-options {
+  margin-top: 35px;
+  .grafana-segment-list {
+    margin-left: 0;
   }
 }
 
@@ -512,11 +467,30 @@ select.grafana-target-segment-input {
   width: 200px;
   text-align: center;
   cursor: auto;
-  //background: rgba(50,50,50,0.8);
   padding: 10px;
 }
 
 .grafana-version-footer {
   padding-top: 15px;
   text-align: left;
+}
+
+
+.metrics-editor-help:hover {
+  .hide {
+    display: block;
+  }
+}
+
+.grafana-tooltip {
+  position : absolute;
+  top: -1000;
+  left: 0;
+  color: #c8c8c8;
+  padding: 10px;
+  font-size: 11pt;
+  font-weight : 200;
+  background-color: rgb(58, 57, 57);
+  border-radius: 5px;
+  z-index: 9999;
 }

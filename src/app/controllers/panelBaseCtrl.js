@@ -85,7 +85,7 @@ function (angular, _, $) {
 
           $timeout(function() {
             if (oldTimeRange !== $scope.range) {
-              $scope.dashboard.refresh();
+              $scope.dashboard.emit_refresh();
             }
             else {
               $scope.$emit('render');

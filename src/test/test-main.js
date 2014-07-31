@@ -42,10 +42,8 @@ require.config({
     'jquery.flot.stack':      '../vendor/jquery/jquery.flot.stack',
     'jquery.flot.stackpercent':'../vendor/jquery/jquery.flot.stackpercent',
     'jquery.flot.time':       '../vendor/jquery/jquery.flot.time',
-    'jquery.flot.byte':       '../vendor/jquery/jquery.flot.byte',
 
     modernizr:                '../vendor/modernizr-2.6.1',
-    elasticjs:                '../vendor/elasticjs/elastic-angular-client',
   },
 
   shim: {
@@ -76,7 +74,6 @@ require.config({
 
     'jquery-ui':            ['jquery'],
     'jquery.flot':          ['jquery'],
-    'jquery.flot.byte':     ['jquery', 'jquery.flot'],
     'jquery.flot.pie':      ['jquery', 'jquery.flot'],
     'jquery.flot.events':   ['jquery', 'jquery.flot'],
     'jquery.flot.selection':['jquery', 'jquery.flot'],
@@ -97,11 +94,8 @@ require.config({
 
     'bootstrap-tagsinput':          ['jquery'],
 
-
     timepicker:             ['jquery', 'bootstrap'],
     datepicker:             ['jquery', 'bootstrap'],
-
-    elasticjs:              ['angular', '../vendor/elasticjs/elastic'],
   }
 });
 
@@ -110,7 +104,6 @@ require([
   'angularMocks',
   'jquery',
   'underscore',
-  'elasticjs',
   'bootstrap',
   'angular-sanitize',
   'angular-strap',
@@ -120,10 +113,10 @@ require([
 ], function(angular) {
   'use strict';
 
-  angular.module('kibana', []);
-  angular.module('kibana.services', ['$strap.directives']);
-  angular.module('kibana.panels', []);
-  angular.module('kibana.filters', []);
+  angular.module('grafana', []);
+  angular.module('grafana.services', ['$strap.directives']);
+  angular.module('grafana.panels', []);
+  angular.module('grafana.filters', []);
 
   require([
     'specs/lexer-specs',
@@ -131,8 +124,10 @@ require([
     'specs/gfunc-specs',
     'specs/filterSrv-specs',
     'specs/kbn-format-specs',
+    'specs/influxSeries-specs'
   ], function () {
     window.__karma__.start();
   });
 
 });
+

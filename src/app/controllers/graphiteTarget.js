@@ -8,7 +8,7 @@ define([
 function (angular, _, config, gfunc, Parser) {
   'use strict';
 
-  var module = angular.module('kibana.controllers');
+  var module = angular.module('grafana.controllers');
 
   module.controller('GraphiteTargetCtrl', function($scope) {
 
@@ -265,6 +265,13 @@ function (angular, _, config, gfunc, Parser) {
           $scope.targetChanged();
           return;
         }
+      }
+    };
+
+    $scope.toggleMetricOptions = function() {
+      $scope.panel.metricOptionsEnabled = !$scope.panel.metricOptionsEnabled;
+      if (!$scope.panel.metricOptionsEnabled) {
+        delete $scope.panel.cacheTimeout;
       }
     };
 

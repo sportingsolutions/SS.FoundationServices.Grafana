@@ -6,7 +6,7 @@ define([
 function (angular, _, kbn) {
   'use strict';
 
-  var module = angular.module('kibana.services');
+  var module = angular.module('grafana.services');
 
   module.factory('OpenTSDBDatasource', function($q, $http) {
 
@@ -33,9 +33,7 @@ function (angular, _, kbn) {
       var groupByTags = {};
       _.each(queries, function(query) {
         _.each(query.tags, function(val, key) {
-          if (val === "*") {
-            groupByTags[key] = true;
-          }
+          groupByTags[key] = true;
         });
       });
 

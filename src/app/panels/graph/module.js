@@ -25,7 +25,6 @@ define([
   'jquery.flot.events',
   'jquery.flot.selection',
   'jquery.flot.time',
-  'jquery.flot.byte',
   'jquery.flot.stack',
   'jquery.flot.stackpercent'
 ],
@@ -33,7 +32,7 @@ function (angular, app, $, _, kbn, moment, timeSeries) {
 
   'use strict';
 
-  var module = angular.module('kibana.panels.graph', []);
+  var module = angular.module('grafana.panels.graph', []);
   app.useModule(module);
 
   module.controller('graph', function($scope, $rootScope, datasourceSrv, $timeout, annotationsSrv) {
@@ -86,7 +85,7 @@ function (angular, app, $, _, kbn, moment, timeSeries) {
        */
       scale         : 1,
       /** @scratch /panels/histogram/3
-       * y_formats :: 'none','bytes','bits','short', 's', 'ms'
+       * y_formats :: 'none','bytes','bits','bps','short', 's', 'ms'
        */
       y_formats    : ['short', 'short'],
       /** @scratch /panels/histogram/5
@@ -221,7 +220,7 @@ function (angular, app, $, _, kbn, moment, timeSeries) {
       $scope.editorTabs = _.pluck($scope.panelMeta.fullEditorTabs,'title');
       $scope.hiddenSeries = {};
 
-      $scope.datasources = datasourceSrv.listOptions();
+      $scope.datasources = datasourceSrv.getMetricSources();
       $scope.setDatasource($scope.panel.datasource);
 
       if ($scope.panel.targets.length === 0) {
@@ -266,18 +265,19 @@ function (angular, app, $, _, kbn, moment, timeSeries) {
 
       $scope.updateTimeRange();
 
-      var graphiteQuery = {
+      var metricsQuery = {
         range: $scope.rangeUnparsed,
         interval: $scope.interval,
         targets: $scope.panel.targets,
         format: $scope.panel.renderer === 'png' ? 'png' : 'json',
         maxDataPoints: $scope.resolution,
-        datasource: $scope.panel.datasource
+        datasource: $scope.panel.datasource,
+        cacheTimeout: $scope.panel.cacheTimeout
       };
 
-      $scope.annotationsPromise = annotationsSrv.getAnnotations($scope.filter, $scope.rangeUnparsed);
+      $scope.annotationsPromise = annotationsSrv.getAnnotations($scope.filter, $scope.rangeUnparsed, $scope.dashboard);
 
-      return $scope.datasource.query($scope.filter, graphiteQuery)
+      return $scope.datasource.query($scope.filter, metricsQuery)
         .then($scope.dataHandler)
         .then(null, function(err) {
           $scope.panelMeta.loading = false;

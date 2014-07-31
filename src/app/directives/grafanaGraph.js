@@ -8,15 +8,17 @@ define([
 function (angular, $, kbn, moment, _) {
   'use strict';
 
-  var module = angular.module('kibana.directives');
+  var module = angular.module('grafana.directives');
 
-  module.directive('grafanaGraph', function($rootScope, dashboard) {
+  module.directive('grafanaGraph', function($rootScope) {
     return {
       restrict: 'A',
       template: '<div> </div>',
       link: function(scope, elem) {
         var data, plot, annotations;
         var hiddenData = {};
+        var dashboard = scope.dashboard;
+        var legendSideLastValue = null;
 
         scope.$on('refresh',function() {
           if (scope.otherPanelInFullscreenMode()) { return; }
@@ -55,7 +57,7 @@ function (angular, $, kbn, moment, _) {
 
             height = height - 32; // subtract panel title bar
 
-            if (scope.panel.legend.show) {
+            if (scope.panel.legend.show && !scope.panel.legend.rightSide) {
               height = height - 21; // subtract one line legend
             }
 
@@ -135,6 +137,7 @@ function (angular, $, kbn, moment, _) {
             yaxes: [],
             xaxis: {},
             grid: {
+              minBorderMargin: 0,
               markings: [],
               backgroundColor: null,
               borderWidth: 0,
@@ -161,9 +164,29 @@ function (angular, $, kbn, moment, _) {
           addAnnotations(options);
           configureAxisOptions(data, options);
 
-          plot = $.plot(elem, data, options);
+          // if legend is to the right delay plot draw a few milliseconds
+          // so the legend width calculation can be done
+          if (shouldDelayDraw(panel)) {
+            legendSideLastValue = panel.legend.rightSide;
+            setTimeout(function() {
+              plot = $.plot(elem, data, options);
+              addAxisLabels();
+            }, 50);
+          }
+          else {
+            plot = $.plot(elem, data, options);
+            addAxisLabels();
+          }
+        }
 
-          addAxisLabels();
+        function shouldDelayDraw(panel) {
+          if (panel.legend.rightSide) {
+            return true;
+          }
+          if (legendSideLastValue !== null && panel.legend.rightSide !== legendSideLastValue) {
+            return true;
+          }
+          return false;
         }
 
         function addTimeAxis(options) {
@@ -172,7 +195,7 @@ function (angular, $, kbn, moment, _) {
           var max = _.isUndefined(scope.range.to) ? null : scope.range.to.getTime();
 
           options.xaxis = {
-            timezone: dashboard.current.timezone,
+            timezone: dashboard.timezone,
             show: scope.panel['x-axis'],
             mode: "time",
             min: min,
@@ -316,7 +339,7 @@ function (angular, $, kbn, moment, _) {
             if (seriesInfo.alias) {
               group = '<small style="font-size:0.9em;">' +
                 '<i class="icon-circle" style="color:'+item.series.color+';"></i>' + ' ' +
-                (decodeURIComponent(seriesInfo.alias)) +
+                seriesInfo.alias +
               '</small><br>';
             } else {
               group = kbn.query_color_dot(item.series.color, 15) + ' ';
@@ -331,7 +354,7 @@ function (angular, $, kbn, moment, _) {
 
             value = kbn.getFormatFunction(format, 2)(value);
 
-            timestamp = dashboard.current.timezone === 'browser' ?
+            timestamp = dashboard.timezone === 'browser' ?
               moment(item.datapoint[0]).format('YYYY-MM-DD HH:mm:ss') :
               moment.utc(item.datapoint[0]).format('YYYY-MM-DD HH:mm:ss');
             $tooltip
@@ -347,14 +370,16 @@ function (angular, $, kbn, moment, _) {
         function render_panel_as_graphite_png(url) {
           url += '&width=' + elem.width();
           url += '&height=' + elem.css('height').replace('px', '');
-          url += '&bgcolor=1f1f1f'; // @grayDarker & @kibanaPanelBackground
+          url += '&bgcolor=1f1f1f'; // @grayDarker & @grafanaPanelBackground
           url += '&fgcolor=BBBFC2'; // @textColor & @grayLighter
           url += scope.panel.stack ? '&areaMode=stacked' : '';
           url += scope.panel.fill !== 0 ? ('&areaAlpha=' + (scope.panel.fill/10).toFixed(1)) : '';
           url += scope.panel.linewidth !== 0 ? '&lineWidth=' + scope.panel.linewidth : '';
           url += scope.panel.legend.show ? '&hideLegend=false' : '&hideLegend=true';
-          url += scope.panel.grid.min !== null ? '&yMin=' + scope.panel.grid.min : '';
-          url += scope.panel.grid.max !== null ? '&yMax=' + scope.panel.grid.max : '';
+          url += scope.panel.grid.leftMin !== null ? '&yMin=' + scope.panel.grid.leftMin : '';
+          url += scope.panel.grid.leftMax !== null ? '&yMax=' + scope.panel.grid.leftMax : '';
+          url += scope.panel.grid.rightMin !== null ? '&yMin=' + scope.panel.grid.rightMin : '';
+          url += scope.panel.grid.rightMax !== null ? '&yMax=' + scope.panel.grid.rightMax : '';
           url += scope.panel['x-axis'] ? '' : '&hideAxes=true';
           url += scope.panel['y-axis'] ? '' : '&hideYAxis=true';
 
@@ -364,6 +389,9 @@ function (angular, $, kbn, moment, _) {
             break;
           case 'bits':
             url += '&yUnitSystem=binary';
+            break;
+          case 'bps':
+            url += '&yUnitSystem=si';
             break;
           case 'short':
             url += '&yUnitSystem=si';
