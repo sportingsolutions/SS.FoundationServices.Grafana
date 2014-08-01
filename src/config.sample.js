@@ -15,15 +15,15 @@ function (Settings) {
     datasources: {
       graphite: {
         type: 'graphite',
-        url: "http://my.graphite.server.com:8080",
+        url: "http://10.13.100.146",
         default: true
       },
       // elasticsearch, used for storing and loading dashboards, annotations
       // For Basic authentication use: http://username:password@domain.com:9200
       elasticsearch: {
         type: 'elasticsearch',
-        url: "http://"+window.location.hostname+":9200",
-        index: 'grafana-dash',  // index for storing dashboards
+        url: "http://10.13.100.59:9200",
+        index: '!INDEX_TO_REPLACE!',  // index for storing dashboards
         grafanaDB: true,
       }
     },
