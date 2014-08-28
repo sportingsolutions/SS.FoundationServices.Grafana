@@ -1,5 +1,5 @@
 define([
-  'underscore',
+  'lodash',
   'crypto',
 ],
 function (_, crypto) {
@@ -14,12 +14,13 @@ function (_, crypto) {
      */
     var defaults = {
       datasources                   : {},
+      window_title_prefix           : 'Grafana - ',
       panels                        : ['graph', 'text'],
       plugins                       : {},
       default_route                 : '/dashboard/file/default.json',
       playlist_timespan             : "1m",
       unsaved_changes_warning       : true,
-      search                        : { max_results: 20 },
+      search                        : { max_results: 16 },
       admin                         : {}
     };
 
@@ -70,12 +71,16 @@ function (_, crypto) {
 
     _.each(settings.datasources, function(datasource, key) {
       datasource.name = key;
-      parseBasicAuth(datasource);
+      if (datasource.url) { parseBasicAuth(datasource); }
       if (datasource.type === 'influxdb') { parseMultipleHosts(datasource); }
     });
 
     if (settings.plugins.panels) {
       settings.panels = _.union(settings.panels, settings.plugins.panels);
+    }
+
+    if (!settings.plugins.dependencies) {
+      settings.plugins.dependencies = [];
     }
 
     return settings;

@@ -1,7 +1,7 @@
 define([
   'angular',
   'app',
-  'underscore',
+  'lodash',
   'jquery',
   'require',
   'kbn'
@@ -14,10 +14,10 @@ function (angular, app, _, $) {
   var WARNING = "icon-exclamation-sign";
   var ERROR = "icon-remove-sign";
 
-  var module = angular.module('kibana.panels.health', []);
+  var module = angular.module('grafana.panels.health', []);
   app.useModule(module);
 
-  module.controller('health', function($rootScope, $scope, datasourceSrv) {
+  module.controller('health', function($rootScope, $scope, panelSrv, datasourceSrv) {
 
     $scope.panelMeta = {
       description : "Shows a metric as a health icon."
@@ -41,7 +41,7 @@ function (angular, app, _, $) {
     _.defaults($scope.panel, _d);
 
     $scope.init = function() {
-      $scope.initBaseController(this, $scope);
+      panelSrv.init(this);
       $scope.panel.updates = [];
       $scope.getData();
     };
@@ -247,6 +247,8 @@ function (angular, app, _, $) {
       };
 
     };
+
+    $scope.init();
 
   });
 

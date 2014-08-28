@@ -1,6 +1,6 @@
 define([
   'angular',
-  'underscore',
+  'lodash',
   'config',
   './graphite/graphiteDatasource',
   './influxdb/influxdbDatasource',
@@ -67,6 +67,8 @@ function (angular, _, config) {
       case 'elasticsearch':
         Datasource = $injector.get('ElasticDatasource');
         break;
+      default:
+        Datasource = $injector.get(ds.type);
       }
       return new Datasource(ds);
     };

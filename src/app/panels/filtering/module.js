@@ -6,7 +6,7 @@
 define([
   'angular',
   'app',
-  'underscore'
+  'lodash'
 ],
 function (angular, app, _) {
   'use strict';
@@ -53,7 +53,7 @@ function (angular, app, _) {
         if (templateParam === updatedTemplatedParam) {
           return;
         }
-        if (templateParam.query.indexOf(updatedTemplatedParam.name) !== -1) {
+        if (templateParam.query.indexOf('[[' + updatedTemplatedParam.name + ']]') !== -1) {
           return $scope.applyFilter(templateParam);
         }
       });

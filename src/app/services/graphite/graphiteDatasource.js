@@ -1,6 +1,6 @@
 define([
   'angular',
-  'underscore',
+  'lodash',
   'jquery',
   'config',
   'kbn',
@@ -150,7 +150,7 @@ function (angular, _, $, config, kbn, moment) {
 
       if (rounding === 'round-up') {
         if (date.get('s')) {
-          date.add('m', 1);
+          date.add(1, 'm');
         }
       }
       else if (rounding === 'round-down') {
@@ -159,7 +159,7 @@ function (angular, _, $, config, kbn, moment) {
         // to guarantee that we get all the data that
         // exists for the specified range
         if (date.get('s')) {
-          date.subtract('m', 1);
+          date.subtract(1, 'm');
         }
       }
 
@@ -205,6 +205,7 @@ function (angular, _, $, config, kbn, moment) {
       }
 
       options.url = this.url + options.url;
+      options.inspect = { type: 'graphite' };
 
       return $http(options);
     };

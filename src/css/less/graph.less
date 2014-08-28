@@ -4,7 +4,7 @@
 
 .graph-legend {
   margin: 0 20px;
-  text-align: left;
+  text-align: center;
   position: relative;
   top: 2px;
 
@@ -15,19 +15,37 @@
 
 .graph-legend-icon {
   position: relative;
-  top: 2px;
+  padding-right: 4px;
+  top: 1px;
 }
 
 .graph-legend-series,
 .graph-legend-icon,
 .graph-legend-alias,
 .graph-legend-value {
-  display: inline-block;
+  float: left;
   white-space: nowrap;
+  text-align: left;
+  &.current:before {
+    content: "Current: "
+  }
+  &.max:before {
+    content: "Max: "
+  }
+  &.min:before {
+    content: "Min: "
+  }
+  &.total:before {
+    content: "Total: "
+  }
+  &.avg:before {
+    content: "Avg: "
+  }
 }
 
 .graph-legend-series {
   padding-left: 10px;
+  padding-top: 2px;
 }
 
 .graph-legend-value {
@@ -39,6 +57,7 @@
 
   .graph-legend-series {
     display: table-row;
+    float: none;
     padding-left: 0;
     &.pull-right {
       float: none;
@@ -49,17 +68,21 @@
   }
 
   .graph-legend-alias {
+    float: none;
     display: table-cell;
     white-space: nowrap;
   }
 
   .graph-legend-icon {
     display: table-cell;
+    float: none;
     white-space: nowrap;
     padding: 0 4px;
+    top: 2px;
   }
 
   .graph-legend-value  {
+    float: none;
     display: table-cell;
     white-space: nowrap;
     padding-left: 15px;
@@ -130,4 +153,18 @@
 
 .annotation-tags {
   color: @purple;
+}
+
+.graph-series-override {
+  input {
+    float: left;
+    margin-right: 10px;
+  }
+  .graph-series-override-option {
+    float: left;
+    padding: 2px 6px;
+  }
+  .graph-series-override-selector {
+    float: left;
+  }
 }

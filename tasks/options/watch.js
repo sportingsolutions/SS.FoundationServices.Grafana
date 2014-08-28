@@ -1,9 +1,11 @@
 module.exports = function(config) {
   return {
-    all: {
-        files: ['**/*.js','**/*.html'],
-        tasks: ['default'], 
+    css: {
+      files: [ '<%= srcDir %>/css/**/*.less' ],
+      tasks: ['css'],
+      options: {
         spawn: false
       }
+    }
   };
 };

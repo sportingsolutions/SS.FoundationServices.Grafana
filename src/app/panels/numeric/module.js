@@ -1,7 +1,7 @@
 define([
   'angular',
   'app',
-  'underscore',
+  'lodash',
   'jquery',
   'require',
   'kbn'
@@ -10,10 +10,10 @@ define([
 function (angular, app, _, $) {
   'use strict';
 
-  var module = angular.module('kibana.panels.numeric', []);
+  var module = angular.module('grafana.panels.numeric', []);
   app.useModule(module);
 
-  module.controller('numeric', function($rootScope, $scope, datasourceSrv) {
+  module.controller('numeric', function($rootScope, $scope, panelSrv, datasourceSrv) {
 
     $scope.panelMeta = {
       description : "Shows a metric as a numeric value, optionally with a delta"
@@ -33,7 +33,7 @@ function (angular, app, _, $) {
     _.defaults($scope.panel, _d);
 
     $scope.init = function() {
-      $scope.initBaseController(this, $scope);
+      panelSrv.init(this);
 
       $scope.panel.val = "0";
       $scope.panel.delta = "+/- 0";
@@ -148,6 +148,8 @@ function (angular, app, _, $) {
       $scope.panelMeta.loading = false;
 
     };
+
+    $scope.init();
 
   });
 

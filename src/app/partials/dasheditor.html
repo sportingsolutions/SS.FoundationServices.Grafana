@@ -2,7 +2,7 @@
   <div class="pull-right editor-title">Dashboard settings</div>
 
   <div ng-model="editor.index" bs-tabs style="text-transform:capitalize;">
-    <div ng-repeat="tab in ['General', 'Rows','Controls', 'Import']" data-title="{{tab}}">
+    <div ng-repeat="tab in ['General', 'Rows', 'Controls', 'Import']" data-title="{{tab}}">
     </div>
     <div ng-repeat="tab in dashboard.nav" data-title="{{tab.type}}">
     </div>
@@ -25,7 +25,7 @@
           <label class="small">Hide controls (CTRL+H)</label>
           <input type="checkbox" ng-model="dashboard.hideControls" ng-checked="dashboard.hideControls">
         </div>
-      </div>
+     </div>
     </div>
      <div class="editor-row">
       <div class="section">
@@ -68,54 +68,25 @@
     </div>
   </div>
 
-  <div ng-if="editor.index == 2" ng-controller="dashLoader">
-    <div class="editor-row">
-      <div class="section">
-        <h5>Save to</h5>
-        <div class="editor-option">
-          <label class="small">Elasticsearch</label><input type="checkbox" ng-model="dashboard.loader.save_elasticsearch" ng-checked="dashboard.loader.save_elasticsearch">
-        </div>
-      </div>
-      <div class="section">
-        <h5>Load from</h5>
-				<div class="editor-option">
-          <label class="small">Elasticsearch</label><input type="checkbox" ng-model="dashboard.loader.load_elasticsearch" ng-checked="dashboard.loader.load_elasticsearch">
-        </div>
-      </div>
-      <div class="section">
-      <h5>Sharing</h5>
-        <div class="editor-option" >
-          <label class="small">Allow Sharing <tip>Allow generating adhoc links to dashboards</tip></label><input type="checkbox" ng-model="dashboard.loader.save_temp" ng-checked="dashboard.loader.save_temp">
-        </div>
-        <div class="editor-option" ng-show="dashboard.loader.save_temp">
-          <label class="small">TTL <tip>Expire temp urls</tip></label><input type="checkbox" ng-model="dashboard.loader.save_temp_ttl_enable">
-        </div>
-        <div class="editor-option" ng-show="dashboard.loader.save_temp &amp;&amp; dashboard.loader.save_temp_ttl_enable">
-          <label class="small">TTL Duration <tip>Elasticsearch date math, eg: 1m,1d,1w,30d  </tip></label><input class="input-small" type="text" ng-model="dashboard.loader.save_temp_ttl">
-        </div>
-      </div>
-    </div>
-  </div>
-
   <div ng-if="editor.index == 2">
     <div class="editor-row">
-      <div class="section">
-        <h5>Feature toggles</h5>
-        <div class="editor-option" ng-repeat="pulldown in dashboard.pulldowns">
-          <label class="small" style="text-transform:capitalize;">{{pulldown.type}}</label><input type="checkbox" ng-model="pulldown.enable" ng-checked="pulldown.enable">
-        </div>
-        <div class="editor-option" ng-repeat="pulldown in dashboard.nav">
-          <label class="small" style="text-transform:capitalize;">{{pulldown.type}}</label><input type="checkbox" ng-model="pulldown.enable" ng-checked="pulldown.enable">
-        </div>
-      </div>
-    </div>
-  </div>
+			<div class="section">
+				<h5>Feature toggles</h5>
+				<div class="editor-option" ng-repeat="pulldown in dashboard.pulldowns">
+					<label class="small" style="text-transform:capitalize;">{{pulldown.type}}</label><input type="checkbox" ng-model="pulldown.enable" ng-checked="pulldown.enable">
+				</div>
+				<div class="editor-option" ng-repeat="pulldown in dashboard.nav">
+					<label class="small" style="text-transform:capitalize;">{{pulldown.type}}</label><input type="checkbox" ng-model="pulldown.enable" ng-checked="pulldown.enable">
+				</div>
+			</div>
+		</div>
+	</div>
 
 	<div ng-if="editor.index == 3">
     <ng-include src="'app/partials/import.html'"></ng-include>
   </div>
 
-  <div ng-repeat="pulldown in dashboard.nav" ng-controller="SubmenuCtrl" ng-show="editor.index == 5+$index">
+  <div ng-repeat="pulldown in dashboard.nav" ng-controller="SubmenuCtrl" ng-show="editor.index == 4+$index">
     <ng-include ng-show="pulldown.enable" src="edit_path(pulldown.type)"></ng-include>
     <button ng-hide="pulldown.enable" class="btn" ng-click="pulldown.enable = true">Enable the {{pulldown.type}}</button>
   </div>
@@ -127,6 +98,7 @@
     <span class="editor-option small">
       Grafana version: {{grafanaVersion}}
     </span>
+		<span> | <a ng-click="toggleConsole()" ng-show="!consoleEnabled">enable console</a> <a ng-click="toggleConsole()" ng-show="consoleEnabled">disable console</a></span>
     <div class="small" grafana-version-check>
     </div>
   </div>

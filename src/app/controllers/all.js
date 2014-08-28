@@ -1,7 +1,7 @@
 define([
   './grafanaCtrl',
-  './dash',
-  './dashLoader',
+  './dashboardCtrl',
+  './dashboardNavCtrl',
   './row',
   './submenuCtrl',
   './pulldown',
@@ -13,4 +13,5 @@ define([
   './playlistCtrl',
   './inspectCtrl',
   './opentsdbTargetCtrl',
+  './console-ctrl',
 ], function () {});

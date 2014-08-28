@@ -1,19 +1,21 @@
 define([
   'angular',
-  'underscore',
+  'lodash',
   'moment',
   'config',
+  'store',
   'filesaver'
 ],
-function (angular, _, moment, config) {
+function (angular, _, moment, config, store) {
   'use strict';
 
   var module = angular.module('grafana.controllers');
 
-  module.controller('dashLoader', function($scope, $rootScope, $http, alertSrv, $location, playlistSrv, datasourceSrv) {
+  module.controller('DashboardNavCtrl', function($scope, $rootScope, alertSrv, $location, playlistSrv, datasourceSrv) {
 
     $scope.init = function() {
       $scope.db = datasourceSrv.getGrafanaDB();
+
       $scope.onAppEvent('save-dashboard', function() {
         $scope.saveDashboard();
       });
@@ -21,42 +23,23 @@ function (angular, _, moment, config) {
       $scope.onAppEvent('zoom-out', function() {
         $scope.zoom(2);
       });
-    };
 
-    $scope.exitFullscreen = function() {
-      $scope.emitAppEvent('panel-fullscreen-exit');
-    };
-
-    $scope.showDropdown = function(type) {
-      if(_.isUndefined($scope.dashboard)) {
-        return true;
-      }
-
-      var _l = $scope.dashboard.loader;
-      if(type === 'load') {
-        return (_l.load_elasticsearch);
-      }
-      if(type === 'save') {
-        return (_l.save_elasticsearch);
-      }
-      if(type === 'share') {
-        return (_l.save_temp);
-      }
-      return false;
     };
 
     $scope.set_default = function() {
-      window.localStorage.grafanaDashboardDefault = $location.path();
+      store.set('grafanaDashboardDefault', $location.path());
       alertSrv.set('Home Set','This page has been set as your default dashboard','success',5000);
     };
 
     $scope.purge_default = function() {
-      delete window.localStorage.grafanaDashboardDefault;
+      store.delete('grafanaDashboardDefault');
       alertSrv.set('Local Default Clear','Your default dashboard has been reset to the default','success', 5000);
     };
 
     $scope.saveForSharing = function() {
-      $scope.db.saveDashboardTemp($scope.dashboard)
+      var clone = angular.copy($scope.dashboard);
+      clone.temp = true;
+      $scope.db.saveDashboard(clone)
         .then(function(result) {
 
           $scope.share = { url: result.url, title: result.title };
@@ -89,10 +72,12 @@ function (angular, _, moment, config) {
     $scope.saveDashboard = function() {
       if (!this.isAdmin()) { return false; }
 
-      $scope.db.saveDashboard($scope.dashboard, $scope.dashboard.title)
+      var clone = angular.copy($scope.dashboard);
+      $scope.db.saveDashboard(clone)
         .then(function(result) {
           alertSrv.set('Dashboard Saved', 'Dashboard has been saved as "' + result.title + '"','success', 5000);
 
+          $location.search({});
           $location.path(result.url);
 
           $rootScope.$emit('dashboard-saved', $scope.dashboard);
@@ -102,7 +87,9 @@ function (angular, _, moment, config) {
         });
     };
 
-    $scope.deleteDashboard = function(id) {
+    $scope.deleteDashboard = function(id, $event) {
+      $event.stopPropagation();
+
       if (!confirm('Are you sure you want to delete dashboard?')) {
         return;
       }
@@ -124,23 +111,23 @@ function (angular, _, moment, config) {
     // function $scope.zoom
     // factor :: Zoom factor, so 0.5 = cuts timespan in half, 2 doubles timespan
     $scope.zoom = function(factor) {
-      var _range = $scope.filter.timeRange();
-      var _timespan = (_range.to.valueOf() - _range.from.valueOf());
-      var _center = _range.to.valueOf() - _timespan/2;
+      var range = $scope.filter.timeRange();
 
-      var _to = (_center + (_timespan*factor)/2);
-      var _from = (_center - (_timespan*factor)/2);
+      var timespan = (range.to.valueOf() - range.from.valueOf());
+      var center = range.to.valueOf() - timespan/2;
 
-      // If we're not already looking into the future, don't.
-      if(_to > Date.now() && _range.to < Date.now()) {
-        var _offset = _to - Date.now();
-        _from = _from - _offset;
-        _to = Date.now();
+      var to = (center + (timespan*factor)/2);
+      var from = (center - (timespan*factor)/2);
+
+      if(to > Date.now() && range.to <= Date.now()) {
+        var offset = to - Date.now();
+        from = from - offset;
+        to = Date.now();
       }
 
       $scope.filter.setTime({
-        from:moment.utc(_from).toDate(),
-        to:moment.utc(_to).toDate(),
+        from:moment.utc(from).toDate(),
+        to:moment.utc(to).toDate(),
       });
     };
 
@@ -150,6 +137,7 @@ function (angular, _, moment, config) {
 
     $scope.openSaveDropdown = function() {
       $scope.isFavorite = playlistSrv.isCurrentFavorite($scope.dashboard);
+      $scope.saveDropdownOpened = true;
     };
 
     $scope.markAsFavorite = function() {

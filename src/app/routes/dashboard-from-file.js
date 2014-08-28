@@ -2,7 +2,7 @@ define([
   'angular',
   'jquery',
   'config',
-  'underscore'
+  'lodash'
 ],
 function (angular, $, config, _) {
   "use strict";
@@ -14,6 +14,7 @@ function (angular, $, config, _) {
       .when('/dashboard/file/:jsonFile', {
         templateUrl: 'app/partials/dashboard.html',
         controller : 'DashFromFileProvider',
+        reloadOnSearch: false,
       });
   });
 

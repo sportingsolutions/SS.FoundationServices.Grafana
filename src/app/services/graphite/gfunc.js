@@ -1,5 +1,5 @@
 define([
-  'underscore'
+  'lodash'
 ],
 function (_) {
   'use strict';
@@ -216,6 +216,7 @@ function (_) {
 
   addFuncDef({
     name: 'randomWalk',
+    fake: true,
     category: categories.Special,
     params: [{ name: "name", type: "string", }],
     defaultParams: ['randomWalk']

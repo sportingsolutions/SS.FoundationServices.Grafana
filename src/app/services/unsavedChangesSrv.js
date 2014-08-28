@@ -1,6 +1,6 @@
 define([
   'angular',
-  'underscore',
+  'lodash',
   'config',
 ],
 function(angular, _, config) {
@@ -28,10 +28,12 @@ function(angular, _, config) {
     $rootScope.$on("dashboard-saved", function(event, savedDashboard) {
       self.original = angular.copy(savedDashboard);
       self.current = savedDashboard;
+      self.orignalPath = $location.path();
     });
 
     $rootScope.$on("$routeChangeSuccess", function() {
       self.original = null;
+      self.originalPath = $location.path();
     });
 
     window.onbeforeunload = function() {
@@ -42,6 +44,10 @@ function(angular, _, config) {
 
     this.init = function() {
       $rootScope.$on("$locationChangeStart", function(event, next) {
+        if (self.originalPath === $location.path()) {
+          return;
+        }
+
         if (self.has_unsaved_changes()) {
           event.preventDefault();
           self.next = next;
@@ -74,7 +80,7 @@ function(angular, _, config) {
       var original = self.original;
 
       // ignore timespan changes
-      current.services.filter.time = original.services.filter.time = {};
+      current.time = original.time = {};
 
       current.refresh = original.refresh;
 
